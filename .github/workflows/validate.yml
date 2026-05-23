@@ -1,0 +1,43 @@
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - "subdomains/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout domains
+        uses: actions/checkout@v4
+
+      - name: Checkout ecosystem
+        uses: actions/checkout@v4
+        with:
+          repository: is-pinoy-dev/ecosystem
+          path: ecosystem
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: ecosystem/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: ecosystem
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        working-directory: ecosystem
+        run: pnpm --filter @is-pinoy/registry build && pnpm --filter @is-pinoy/cli build
+
+      - name: Validate domains
+        run: node ecosystem/packages/cli/dist/index.js registry validate --dir ./subdomains
