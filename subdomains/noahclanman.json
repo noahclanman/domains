@@ -10,7 +10,7 @@
     },
     "TXT": {
     "value": "vc-domain-verify=noahclanman.is-pinoy.dev,b1d9a8381ddab7051f94",
-    "provider": "_vercel"
+    "provider": "vercel"
    }
   }
 }
